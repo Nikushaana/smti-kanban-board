@@ -9,12 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.16",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-date-range": "^2.0.1",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
