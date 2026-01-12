@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { DateRange } from "react-date-range";
+import { DateRange, RangeKeyDict } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import dayjs from "dayjs";
@@ -18,8 +18,11 @@ export default function DateRangePicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const handleSelect = (ranges: any) => {
-    onChange(ranges.selection);
+  const handleSelect = (ranges: RangeKeyDict) => {
+    const selection = ranges.selection;
+    if (selection.startDate && selection.endDate) {
+      onChange(selection as { startDate: Date; endDate: Date; key: string });
+    }
   };
 
   // close modal on click outside

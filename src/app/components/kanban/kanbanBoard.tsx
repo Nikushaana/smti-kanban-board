@@ -1,11 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import SkeletonLoader from "./skeletonLoader";
 import PhaseColumn from "./phaseColumn";
 import { fetchInquiries } from "@/app/lib/api/inquiries";
 import { useQuery } from "@tanstack/react-query";
 import { KanbanPhase } from "../../../../types";
+import SkeletonLoader from "../skeletonLoader/skeletonLoader";
 
 export default function KanbanBoard() {
   const searchParams = useSearchParams();
@@ -16,7 +16,7 @@ export default function KanbanBoard() {
   const startDate = searchParams.get("startDate") || "";
   const endDate = searchParams.get("endDate") || "";
 
-  // fetch all phases
+  // fetch filtered phases
   const {
     data: phases,
     isLoading,

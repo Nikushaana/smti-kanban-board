@@ -1,6 +1,5 @@
-// src/app/api/inquiries/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { kanbanMockData } from "@/store/kanbanData";
+import { NextRequest, NextResponse } from "next/server"; 
+import { kanbanStore } from "@/store/kanbanStore";
 
 function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -16,7 +15,7 @@ export async function GET(req: NextRequest) {
     const endDate = url.searchParams.get("endDate");
 
     // Filter inquiries inside each phase
-    const filteredPhases = kanbanMockData.map((phase) => {
+    const filteredPhases = kanbanStore.map((phase) => {
         const filteredInquiries = phase.inquiries.filter((inq) => {
             const matchesClientName =
                 !clientName ||

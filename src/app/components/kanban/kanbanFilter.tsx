@@ -5,17 +5,19 @@ import SearchInput from "../inputs/SearchInput";
 import DateRangePicker from "../inputs/dateRangePicker";
 import MinValueSlider from "../inputs/minValueSlider";
 import { useRouter, useSearchParams } from "next/navigation";
+import { normalizeRange } from "@/app/lib/dateUtils";
 
 export default function KanbanFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [filterValues, setFilterValues] = useState(() => ({
+  const [filterValues, setFilterValues] = useState({
     clientName: searchParams.get("clientName") || "",
     minValue: Number(searchParams.get("minValue") || 0),
-  }));
+  });
 
-  const [selectionRange, setSelectionRange] = useState(() => ({
+  const [selectionRange, setSelectionRange] = useState(() =>
+  normalizeRange({
     startDate: searchParams.get("startDate")
       ? new Date(searchParams.get("startDate")!)
       : new Date(),
@@ -23,22 +25,8 @@ export default function KanbanFilter() {
       ? new Date(searchParams.get("endDate")!)
       : new Date(),
     key: "selection",
-  }));
-
-  // start date gets first hours of day and end date gets last hours of day
-  const normalizeRange = (range: {
-    startDate: Date;
-    endDate: Date;
-    key: string;
-  }) => {
-    const start = new Date(range.startDate);
-    start.setHours(0, 0, 0, 0); // start of the day
-
-    const end = new Date(range.endDate);
-    end.setHours(23, 59, 59, 999); // end of the day
-
-    return { startDate: start, endDate: end, key: range.key };
-  };
+  })
+);
 
   // Debounce updates
   useEffect(() => {
@@ -103,7 +91,7 @@ export default function KanbanFilter() {
   };
 
   return (
-    <div className="bg-gray-300 p-5 rounded-[10px] flex flex-col gap-y-4 ">
+    <div className="bg-purple-300 p-5 rounded-[10px] shadow-md hover:shadow-lg duration-100 flex flex-col gap-y-4 ">
       <h1 className="text-2xl font-bold">Filter Panel</h1>
       <div className="grid grid-cols-3 gap-10">
         <SearchInput

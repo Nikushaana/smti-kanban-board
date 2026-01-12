@@ -5,7 +5,7 @@ import KanbanFilter from "./components/kanban/kanbanFilter";
 export default function Home() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <div className="w-full min-h-screen h-full flex flex-col gap-y-5 pt-10 pb-7 px-5 lg:px-10 ">
+      <div className="w-full min-h-screen h-full flex flex-col gap-y-5 pt-10 pb-7 px-5 lg:px-10 bg-gray-100">
         <KanbanFilter />
         <KanbanBoard />
       </div>

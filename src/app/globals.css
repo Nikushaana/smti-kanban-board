@@ -28,9 +28,6 @@ h6 {
   text-transform: uppercase;
 }
 
-.showYScroll::-webkit-scrollbar {
-  width: 5px;
-}
 .showXScroll::-webkit-scrollbar {
   height: 5px;
 }
