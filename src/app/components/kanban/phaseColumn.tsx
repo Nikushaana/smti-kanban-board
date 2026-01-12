@@ -1,3 +1,6 @@
+"use client"
+
+import { useDroppable } from "@dnd-kit/core";
 import { KanbanPhase } from "../../../../types";
 import InquiryCard from "../cards/InquiryCard";
 
@@ -9,6 +12,10 @@ const phaseColors: Record<string, { header: string; content: string }> = {
 };
 
 export default function PhaseColumn({ phase }: { phase: KanbanPhase }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: phase.name,
+  });
+
   // Calculate total potential value
   const totalValue = phase.inquiries.reduce(
     (sum, inquiry) => sum + inquiry.potentialValue,
@@ -23,7 +30,13 @@ export default function PhaseColumn({ phase }: { phase: KanbanPhase }) {
 
   return (
     <div
-      className={`p-1 pb-5 rounded-[10px] flex flex-col gap-y-4 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-gray-200 duration-200 ${colors.content}`}
+      ref={setNodeRef}
+      className={`p-1 pb-5 rounded-[10px] flex flex-col gap-y-4 border duration-200
+          ${colors.content} ${
+        isOver
+          ? "shadow-2xl border-gray-200"
+          : "shadow-lg border-gray-100 hover:shadow-2xl hover:border-gray-200"
+      }`}
     >
       <div className={`flex flex-col gap-2 p-4 rounded-lg ${colors.header}`}>
         <h1 className="text-gray-600 font-bold">{phase.name}</h1>

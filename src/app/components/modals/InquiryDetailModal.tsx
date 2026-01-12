@@ -5,12 +5,23 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { InquiryPhase } from "../../../../types";
 import { useQueryClient } from "@tanstack/react-query";
-import Select from "react-select";
-import toast from "react-hot-toast";
+import { updateInquiryPhase } from "@/app/lib/api/updateInquiryPhase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 dayjs.extend(relativeTime);
 
-const options = [
+type Option = {
+  value: InquiryPhase;
+  label: string;
+};
+
+const options: Option[] = [
   { value: "new", label: "New" },
   { value: "sent_to_hotels", label: "Sent to Hotels" },
   { value: "offers_received", label: "Offers Received" },
@@ -19,35 +30,14 @@ const options = [
 
 export default function InquiryDetailModal() {
   const { isOpen, inquiry, closeModal } = useInquiryModalStore();
+  const queryClient = useQueryClient();
 
   const showModal = isOpen && inquiry;
-
-  const queryClient = useQueryClient();
 
   const handlePhaseChange = async (phase: InquiryPhase) => {
     if (!inquiry) return;
 
-    try {
-      const res = await fetch(`/api/inquiries/${inquiry.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phase }),
-      });
-
-      if (!res.ok) {
-        toast.error("Failed to update inquiry");
-        return;
-      }
-
-      // refetch main data
-      queryClient.invalidateQueries({ queryKey: ["kanban"] });
-
-      toast.success("Phase updated successfully");
-
-      closeModal();
-    } catch (err) {
-      toast.error("Error updating inquiry");
-    }
+    await updateInquiryPhase(inquiry.id, phase, queryClient, closeModal);
   };
 
   return (
@@ -64,6 +54,7 @@ export default function InquiryDetailModal() {
           showModal ? "translate-x-0" : "translate-x-105"
         }`}
       >
+        {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-lg font-bold">{inquiry?.clientName}</h1>
           <p onClick={closeModal} className="hover:text-red-500 cursor-pointer">
@@ -71,6 +62,7 @@ export default function InquiryDetailModal() {
           </p>
         </div>
 
+        {/* Inquiry details */}
         <div className="flex flex-col gap-y-2 text-sm">
           <p>
             <span className="font-bold">Contact:</span> {inquiry?.contactPerson}
@@ -91,18 +83,26 @@ export default function InquiryDetailModal() {
           </p>
         </div>
 
+        {/* Phase selector */}
         <div className="mt-4 flex flex-col gap-y-1">
           <label className="text-sm font-semibold">Phase</label>
-
           <Select
-            value={options.find((o) => o.value === inquiry?.phase)}
-            onChange={(option) =>
-              handlePhaseChange(option!.value as InquiryPhase)
-            }
-            options={options}
-          />
+            value={inquiry?.phase}
+            onValueChange={(value) => handlePhaseChange(value as InquiryPhase)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select phase" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="new">New</SelectItem>
+              <SelectItem value="sent_to_hotels">Sent to Hotels</SelectItem>
+              <SelectItem value="offers_received">Offers Received</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
+        {/* Hotels */}
         <div className="mt-4 flex flex-col gap-y-2">
           <h3 className="font-semibold">Hotels</h3>
           <ul className="list-disc list-inside text-sm">
@@ -112,11 +112,13 @@ export default function InquiryDetailModal() {
           </ul>
         </div>
 
+        {/* Notes */}
         <div className="mt-4 flex flex-col gap-y-2">
           <h3 className="font-semibold">Notes</h3>
           <p className="text-sm text-gray-700">{inquiry?.notes || "---"}</p>
         </div>
 
+        {/* Footer timestamps */}
         <div className="mt-6 text-xs text-gray-500">
           <p>
             Created: {dayjs(inquiry?.createdAt).format("DD MMM YYYY HH:mm")}
